@@ -12,6 +12,10 @@ import (
 func main() {
 	app := fiber.New()
 
+	app.Get("/", func(c *fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+	})
+
 	// enable cors for all origins for now
 	app.Use(cors.New())
 	port := os.Getenv("PORT")
