@@ -15,10 +15,10 @@ func Connect() {
     dsn := "root:bDDPgmKmVtAyhgxQkLzsOLQaqdFRvyDW@tcp(viaduct.proxy.rlwy.net:21337)/railway?charset=utf8mb4&parseTime=True&loc=Local"
     db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
     if err != nil {
-        log.Fatalf("Error connecting to database: %v", err)
+        log.Fatalf("Error connecting to database naol: %v", err)
     }
     DB = db
-    fmt.Println("Database connected successfully")
+    fmt.Println("Database connected successfully naol")
 }
 
 func GetDB() *gorm.DB {
