@@ -1,31 +1,18 @@
 package main
 
 import (
-	"log"
-	"os"
-
 	"github.com/gofiber/fiber/v2"
-);
-
-func Hello(c *fiber.Ctx) error {
-	return c.SendString("Hello, World!")
-}
-
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/naol86/Go/fiber/bookstore/pkg/routes"
+)
 
 func main() {
-
 	app := fiber.New()
 
-	app.Get("/", Hello)
-	app.Get("/env", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World! from env" + os.Getenv("ENV"))
-	})
+	// enable cors for all origins for now
+	app.Use(cors.New())
 
-	port := os.Getenv("PORT")
-
-	if port == "" {
-		port = "3000"
-	}
-	log.Fatal(app.Listen("0.0.0.0:" + port))
+	routes.Routes(app)
+	app.Listen(":8000")
 
 }
