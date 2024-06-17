@@ -11,15 +11,16 @@ import (
 var DB *gorm.DB
 
 func Connect() {
-	dsn := "naol:naol.@tcp(localhost:3306)/BookStore?charset=utf8mb4&parseTime=True&loc=Local"
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		log.Fatal("database connection fail")
-	}
-	DB = db
-	fmt.Println("database is connected")
+    // Replace with your actual MySQL credentials and connection details
+    dsn := "root:bDDPgmKmVtAyhgxQkLzsOLQaqdFRvyDW@tcp(viaduct.proxy.rlwy.net:21337)/railway?charset=utf8mb4&parseTime=True&loc=Local"
+    db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+    if err != nil {
+        log.Fatalf("Error connecting to database: %v", err)
+    }
+    DB = db
+    fmt.Println("Database connected successfully")
 }
 
 func GetDB() *gorm.DB {
-	return DB
+    return DB
 }
