@@ -1,6 +1,9 @@
 package main
 
 import (
+	"log"
+	"os"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/naol86/Go/fiber/bookstore/pkg/routes"
@@ -11,8 +14,12 @@ func main() {
 
 	// enable cors for all origins for now
 	app.Use(cors.New())
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
 
 	routes.Routes(app)
-	app.Listen(":8000")
+	log.Fatal(app.Listen(":" + port))
 
 }
