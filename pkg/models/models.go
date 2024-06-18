@@ -194,6 +194,49 @@ func GetDepartments(c *fiber.Ctx) error {
 	return c.JSON(departments)
 }
 
+func GetDepartment(c *fiber.Ctx) error {
+	id := c.Params("department_id")
+	Id, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return c.Status(400).SendString("Invalid department id")
+	}
+	var department Department
+	if err := DB.First(&department, Id).Error; err != nil {
+		return c.Status(404).SendString("Department not found")
+	}
+	return c.JSON(department)
+}
+
+func UpdateDepartment(c *fiber.Ctx) error {
+	id := c.Params("department_id")
+	Id, err := strconv.ParseUint(id, 10, 64);
+	if err != nil {
+		return c.Status(400).SendString("Invalid department id")
+	}
+	var department Department
+	if err := DB.First(&department, Id).Error; err != nil {
+		return c.Status(404).SendString("Department not found")
+	}
+
+	var new_department Department
+	if err := c.BodyParser(&new_department); err != nil {
+		return c.Status(400).SendString("Invalid input")
+	}
+
+	if new_department.Name != "" {
+		department.Name = new_department.Name
+	}
+	if new_department.Description != "" {
+		department.Description = new_department.Description
+	}
+
+	if err := DB.Model(&department).Updates(new_department).Error; err != nil {
+		return c.Status(500).SendString("Failed to update department")
+	}
+	return c.JSON(department)
+
+}
+
 func DeleteDepartment(c *fiber.Ctx) error {
 	DId := c.Params("department_id")
 	d_id, err := strconv.ParseUint(DId, 10, 64)
@@ -246,6 +289,10 @@ func GetAllCourse(c *fiber.Ctx) error {
 	DB.Where("department_id = ?", c_id).Find(&courses)
 	return c.JSON(courses)
 }
+
+// func UpdateCourse(c *fiber.Ctx) error {
+// 	id := x.Params("course_id")
+// }
 
 func DeleteCourse(c *fiber.Ctx) error {
 	CId := c.Params("course_id")
