@@ -16,7 +16,7 @@ func Routes(app *fiber.App) {
 
 	// department routes
 	app.Post("/department/:school_id", models.CreateDepartment)
-	// app.Get("/department/:school_id", models.GetDepartments)
+	app.Get("/departments/:school_id", models.GetDepartments)
 	app.Get("/department/:department_id", models.GetDepartment)
 	app.Get("/department", models.GetAllDepartment)
 	app.Put("/department/:department_id", models.UpdateDepartment)
@@ -26,7 +26,8 @@ func Routes(app *fiber.App) {
 	app.Post("/course/:department_id", models.CreateCourse)
 	app.Get("/course/:department_id", models.GetAllCourse)
 	app.Get("/course", models.GetCourses)
-	// app.Put("/course/:course_id", models.UpdateCourse)
+	app.Get("/courses/:course_id", models.GetCourse)
+	app.Put("/course/:course_id", models.UpdateCourse)
 	app.Delete("/course/:course_id", models.DeleteCourse)
 
 	// book routes

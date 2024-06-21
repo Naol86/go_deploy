@@ -290,9 +290,47 @@ func GetAllCourse(c *fiber.Ctx) error {
 	return c.JSON(courses)
 }
 
-// func UpdateCourse(c *fiber.Ctx) error {
-// 	id := x.Params("course_id")
-// }
+func GetCourse(c *fiber.Ctx) error {
+	id := c.Params("course_id")
+	Id, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return c.Status(400).SendString("Invalid course id")
+	}
+	var course Course
+	if err := DB.First(&course, Id).Error; err != nil {
+		return c.Status(404).SendString("Course not found")
+	}
+	return c.JSON(course)
+}
+
+func UpdateCourse(c *fiber.Ctx) error {
+	id := c.Params("course_id")
+	Id, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return c.Status(400).SendString("Invalid course id")
+	}
+	var course Course
+	if err := DB.First(&course, Id).Error; err != nil {
+		return c.Status(404).SendString("Course not found")
+	}
+	var new_course Course
+	if err := c.BodyParser(&new_course); err != nil {
+		return c.Status(400).SendString("Invalid input")
+	}
+	if new_course.Name != "" {
+		course.Name = new_course.Name
+	}
+	if new_course.Description != "" {
+		course.Description = new_course.Description
+	}	
+	if new_course.Code != "" {
+		course.Code = new_course.Code
+	}
+	if err := DB.Model(&course).Updates(new_course).Error; err != nil {
+		return c.Status(500).SendString("Failed to update course")
+	}
+	return c.JSON(course)
+}
 
 func DeleteCourse(c *fiber.Ctx) error {
 	CId := c.Params("course_id")
