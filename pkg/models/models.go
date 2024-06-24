@@ -377,18 +377,50 @@ func GetAllBooks(c *fiber.Ctx) error {
 }
 
 
+// func GetBooks(c *fiber.Ctx) error {
+// 	var books []Books
+// 	// DB.Order("RANDOM()").Limit(5).Find(&books)
+// 	// return c.JSON(books)
+// 	result := DB.Order("RAND()").Limit(15).Find(&books)
+//     if result.Error != nil {
+//         return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+//             "error": "Failed to retrieve books",
+//         })
+//     }
+//     return c.JSON(books)
+// }
+
 func GetBooks(c *fiber.Ctx) error {
+	// Parse query parameters directly from URL
+	schoolID := c.Query("school_id")
+	departmentID := c.Query("department_id")
+	courseID := c.Query("course_id")
+
 	var books []Books
-	// DB.Order("RANDOM()").Limit(5).Find(&books)
-	// return c.JSON(books)
-	result := DB.Order("RAND()").Limit(15).Find(&books)
-    if result.Error != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-            "error": "Failed to retrieve books",
-        })
-    }
-    return c.JSON(books)
+	query := DB.Model(&Books{}).Order("RAND()").Limit(15)
+
+	// Apply filters based on presence of query parameters
+	if courseID != "" {
+		query = query.Where("course_id = ?", courseID)
+	} else if departmentID != "" {
+		query = query.Joins("JOIN courses ON courses.id = books.course_id").
+			Where("courses.department_id = ?", departmentID)
+	} else if schoolID != "" {
+		query = query.Joins("JOIN courses ON courses.id = books.course_id").
+			Joins("JOIN departments ON departments.id = courses.department_id").
+			Where("departments.school_id = ?", schoolID)
+	}
+
+	if err := query.Find(&books).Error; err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to retrieve books",
+		})
+	}
+
+	return c.JSON(books)
 }
+
+
 
 func DeleteBook(c *fiber.Ctx) error {
 	BId := c.Params("book_id")
