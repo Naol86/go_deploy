@@ -379,7 +379,7 @@ func GetAllBooks(c *fiber.Ctx) error {
 
 // func GetBooks(c *fiber.Ctx) error {
 // 	var books []Books
-// 	// DB.Order("RANDOM()").Limit(5).Find(&books)
+// 	// DB.Order("RAND()").Limit(5).Find(&books)
 // 	// return c.JSON(books)
 // 	result := DB.Order("RAND()").Limit(15).Find(&books)
 //     if result.Error != nil {
@@ -395,6 +395,8 @@ func GetBooks(c *fiber.Ctx) error {
 	schoolID := c.Query("school_id")
 	departmentID := c.Query("department_id")
 	courseID := c.Query("course_id")
+	author := c.Query("author")
+	search := c.Query("search") // new search parameter
 
 	var books []Books
 	query := DB.Model(&Books{}).Order("RAND()").Limit(15)
@@ -411,6 +413,16 @@ func GetBooks(c *fiber.Ctx) error {
 			Where("departments.school_id = ?", schoolID)
 	}
 
+	// Apply additional filters
+	if author != "" {
+		query = query.Where("author LIKE ?", "%" + author + "%")
+	}
+
+	// Apply search functionality
+	if search != "" {
+		query = query.Where("name LIKE ? OR description LIKE ? OR author LIKE ?", "%"+search+"%", "%"+search+"%", "%"+search+"%")
+	}
+
 	if err := query.Find(&books).Error; err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to retrieve books",
@@ -419,6 +431,7 @@ func GetBooks(c *fiber.Ctx) error {
 
 	return c.JSON(books)
 }
+
 
 
 
